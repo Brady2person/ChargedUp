@@ -16,11 +16,20 @@ import org.photonvision.EstimatedRobotPose;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+
+
+// TEST IMPORTS
+import edu.wpi.first.cscore.MjpegServer;
+import edu.wpi.first.cscore.CvSink;
+import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.VideoMode.PixelFormat;
 
 public class camera extends SubsystemBase {
   /** Creates a new camera. */
@@ -31,7 +40,7 @@ public class camera extends SubsystemBase {
   boolean didISucceed;
   AprilTagFieldLayout aLayout;
   boolean layoutfailed;
-  
+  //UsbCamera armCamera;
   
 
   public camera() {
@@ -40,6 +49,18 @@ public class camera extends SubsystemBase {
     currentfilter = "AprilTag";
     machineCamera = new PhotonCamera("3468"); 
     machineCamera.setDriverMode(!didISucceed);
+
+    // // USB CAMERA TEST - METHOD 2
+
+    // // Creates UsbCamera and MjpegServer [1] and connects them
+    // CameraServer.startAutomaticCapture();
+
+    // // Creates the CvSink and connects it to the UsbCamera
+    // CvSink cvSink = CameraServer.getVideo();
+
+    // // Creates the CvSource and MjpegServer [2] and connects them
+    // CvSource outputStream = CameraServer.putVideo("Le Arm Camera", 640, 480);
+
 
     try {
       aLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);

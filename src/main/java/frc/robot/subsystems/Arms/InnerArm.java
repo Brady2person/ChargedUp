@@ -6,6 +6,7 @@ package frc.robot.subsystems.Arms;
 
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxAnalogSensor;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
@@ -22,7 +23,7 @@ public class InnerArm extends SubsystemBase {
 
   private CANSparkMax m_innerMotor;
   private SparkMaxPIDController m_outerPIDController;
-  private SparkMaxAnalogSensor m_potentiometor;
+  private SparkMaxAbsoluteEncoder m_potentiometor;
   private double m_setPoint;
   public SparkMaxLimitSwitch m_breakstopper;
   /** Creates a new OuterArm. */
@@ -30,7 +31,7 @@ public class InnerArm extends SubsystemBase {
     m_innerMotor = new CANSparkMax(InnerArmConstants.innermotor, MotorType.kBrushed);
     m_innerMotor.setInverted(true);
     m_outerPIDController = m_innerMotor.getPIDController();
-    m_potentiometor = m_innerMotor.getAnalog(SparkMaxAnalogSensor.Mode.kAbsolute);
+    m_potentiometor = m_innerMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     m_potentiometor.setInverted(InnerArmConstants.kAnalogSensorInverted);
 
     m_outerPIDController.setP(InnerArmConstants.innerP);
@@ -50,27 +51,31 @@ public class InnerArm extends SubsystemBase {
     m_innerMotor.set(InnerArmConstants.raiseSpeed);
   }
   public void raiseETier() {
-    m_outerPIDController.setReference(InnerArmConstants.upPIDReferenceE, CANSparkMax.ControlType.kPosition);
-    m_setPoint = InnerArmConstants.upPIDReferenceM;
+    m_outerPIDController.setReference(InnerArmConstants.PIDReferenceE, CANSparkMax.ControlType.kPosition);
+    m_setPoint = InnerArmConstants.PIDReferenceM;
   }
   public void raiseMid() {
-    m_outerPIDController.setReference(InnerArmConstants.upPIDReferenceM, CANSparkMax.ControlType.kPosition);
-    m_setPoint = InnerArmConstants.upPIDReferenceM;
+    m_outerPIDController.setReference(InnerArmConstants.PIDReferenceM, CANSparkMax.ControlType.kPosition);
+    m_setPoint = InnerArmConstants.PIDReferenceM;
   }
   public void raiseSTier() {
-    m_outerPIDController.setReference(InnerArmConstants.upPIDReferenceS, CANSparkMax.ControlType.kPosition);
-    m_setPoint = InnerArmConstants.upPIDReferenceS;
+    m_outerPIDController.setReference(InnerArmConstants.PIDReferenceS, CANSparkMax.ControlType.kPosition);
+    m_setPoint = InnerArmConstants.PIDReferenceS;
   }
   public void raiseTravel() {
-    m_outerPIDController.setReference(InnerArmConstants.upPIDReferenceT, CANSparkMax.ControlType.kPosition);
-    m_setPoint = InnerArmConstants.upPIDReferenceT;
+    m_outerPIDController.setReference(InnerArmConstants.PIDReferenceT, CANSparkMax.ControlType.kPosition);
+    m_setPoint = InnerArmConstants.PIDReferenceT;
+  }
+  public void raiseHuman() {
+    m_outerPIDController.setReference(InnerArmConstants.PIDReferenceH, CANSparkMax.ControlType.kPosition);
+    m_setPoint = InnerArmConstants.PIDReferenceT;
   }
   public void lower(){
     m_innerMotor.set(InnerArmConstants.lowerSpeed);
   }
   public void lowerPID() {
-    m_outerPIDController.setReference(InnerArmConstants.downPIDReference, CANSparkMax.ControlType.kPosition);
-    m_setPoint = InnerArmConstants.downPIDReference; 
+    m_outerPIDController.setReference(InnerArmConstants.PIDReferenceL, CANSparkMax.ControlType.kPosition);
+    m_setPoint = InnerArmConstants.PIDReferenceL; 
   }
   public void stop(){
     m_innerMotor.set(InnerArmConstants.stopSpeed);
@@ -79,11 +84,16 @@ public class InnerArm extends SubsystemBase {
     return (Math.abs(m_setPoint - m_potentiometor.getPosition()) <= InnerArmConstants.innerPIDTolorence);
   }
   public boolean isAtStowed() {
-    return (Math.abs(InnerArmConstants.downPIDReference - m_potentiometor.getPosition()) <= InnerArmConstants.innerPIDTolorence);
+    return (Math.abs(InnerArmConstants.PIDReferenceL - m_potentiometor.getPosition()) <= InnerArmConstants.innerPIDTolorence);
   }
   public void raiseWithInput(double speed) {
+    if (speed != 0){
+   
     System.out.println("Inner arm raised at speed: " + speed);
+    }
     m_innerMotor.set(speed);
+   
+    
   }
   public void reset(){
     

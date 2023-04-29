@@ -5,6 +5,7 @@
 package frc.robot.subsystems.Arms;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxAnalogSensor;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
@@ -21,7 +22,7 @@ public class OuterArm extends SubsystemBase {
 
   private CANSparkMax m_outerMotor;
   private SparkMaxPIDController m_outerPIDController;
-  private SparkMaxAnalogSensor m_potentiometor;
+  private SparkMaxAbsoluteEncoder m_potentiometor;
   private double m_setPoint;
   public SparkMaxLimitSwitch m_breakstopper;
 
@@ -30,7 +31,7 @@ public class OuterArm extends SubsystemBase {
     m_outerMotor = new CANSparkMax(OuterArmConstants.outermotor, MotorType.kBrushless);
     m_outerMotor.setInverted(true);
     m_outerPIDController = m_outerMotor.getPIDController();
-    m_potentiometor = m_outerMotor.getAnalog(SparkMaxAnalogSensor.Mode.kAbsolute);
+    m_potentiometor = m_outerMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     m_potentiometor.setInverted(OuterArmConstants.kAnalogSensorInverted);
 
     m_outerPIDController.setP(OuterArmConstants.outerP);
@@ -63,6 +64,10 @@ public class OuterArm extends SubsystemBase {
     m_outerPIDController.setReference(OuterArmConstants.upPIDReferenceT, CANSparkMax.ControlType.kPosition);
     m_setPoint = OuterArmConstants.upPIDReferenceT;
   }
+  public void raiseHuman() {
+    m_outerPIDController.setReference(OuterArmConstants.upPIDReferenceH, CANSparkMax.ControlType.kPosition);
+    m_setPoint = OuterArmConstants.upPIDReferenceT;
+  }
   public void lower(){
     m_outerMotor.set(OuterArmConstants.lowerSpeed);
   }
@@ -82,9 +87,10 @@ public class OuterArm extends SubsystemBase {
   
 
   public void raiseWithInput(double speed) {
-    System.out.println("Outer arm raised at speed: " + speed);
-    m_outerMotor.set(speed);
-  }
+    if(speed != 0) {
+     System.out.println("Outer arm raised at speed: " + speed);
+    }
+    m_outerMotor.set(speed);}
 
   @Override
   public void periodic() {

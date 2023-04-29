@@ -4,6 +4,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -25,11 +27,13 @@ public class SwerveDrive extends SubsystemBase {
   private SwerveModule[] mSwerveMods;
   private SwerveDriveKinematics swerveDriveKinematics;
   private Field2d field;
+  public  int automode;
 
   private boolean turtleToggle;
-  private double speed;
+  public double speed;
 
   public SwerveDrive() {
+   // automode = 0;
     turtleToggle = false;
     speed = Constants.Swerve.maxSpeed;
 
@@ -76,6 +80,12 @@ public class SwerveDrive extends SubsystemBase {
   public Pose2d getPose() {
     return swerveOdometry.getPoseMeters();
   }
+  public double getRoll() {
+    return gyro.getRoll();
+  }
+  public double getPitch() {
+    return gyro.getPitch();
+  }
 
   public void resetOdometry(Pose2d pose) {
     swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
@@ -121,15 +131,26 @@ public class SwerveDrive extends SubsystemBase {
 
     if (turtleToggle) {
       speed = Constants.Swerve.turtleSpeed;
+      for (SwerveModule mod: mSwerveMods) {
+        mod.SetDriveIdle(IdleMode.kBrake);
+      };
     } else {
       speed = Constants.Swerve.maxSpeed;
-    }
+      for (SwerveModule mod: mSwerveMods) {
+        mod.SetDriveIdle(IdleMode.kBrake);
+    };
+  }
   }
 
   public void zeroGyro() {
     System.out.println("Back Button Pressed");
     System.out.println(gyro);
     gyro.setYaw(0);
+  }
+  public void zeroGyro180() {
+    System.out.println("Back Button Pressed");
+    System.out.println(gyro);
+    gyro.setYaw(180);
   }
 
   public void GetGyroReading() {
@@ -153,6 +174,10 @@ public class SwerveDrive extends SubsystemBase {
       positions[mod.moduleNumber] = mod.getPosition();
     }
     return positions;
+  }
+  public void changeautomode(int newmode){
+    // THIS IS BODGE, FOR FUTURE TEAMS PLEASE DO NOT REFRENCE THIS AWFUL PIECE OF GARBAGE.
+    automode = newmode;
   }
 
   public Rotation2d getYaw() {

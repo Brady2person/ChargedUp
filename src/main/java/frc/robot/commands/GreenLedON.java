@@ -4,16 +4,16 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arms.InnerArm;
+import frc.robot.subsystems.LEDs;
 
-public class InnerArmRaise extends CommandBase {
-  private InnerArm m_subsystem;
-  public InnerArmRaise(InnerArm m_InnerArm) {
-   m_subsystem = m_InnerArm;
-   addRequirements(m_subsystem);
-
+public class GreenLedON extends CommandBase {
+  private LEDs m_subsystem;  //Claw is running the PCM, why change???
+  /** Creates a new LEDlights */
+  public GreenLedON(LEDs p_subsystem) {
+    m_subsystem=p_subsystem;
+    addRequirements(m_subsystem);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -23,18 +23,16 @@ public class InnerArmRaise extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putBoolean("RaiseDone", false);
-    m_subsystem.raise();
+    m_subsystem.GreenLedOn();
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    SmartDashboard.putBoolean("RaiseDone", true);
-    m_subsystem.stop();
-  }
+  public void end(boolean interrupted) {}
+
+  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
