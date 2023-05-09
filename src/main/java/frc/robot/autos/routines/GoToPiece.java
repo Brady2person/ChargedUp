@@ -4,7 +4,7 @@
 
 package frc.robot.autos.routines;
 
-import org.apache.commons.collections4.sequence.InsertCommand;
+// import org.apache.commons.collections4.sequence.InsertCommand;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
