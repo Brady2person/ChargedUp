@@ -31,46 +31,10 @@ import edu.wpi.first.math.geometry.Translation3d;
 public final class Constants {
   // Setpoints For fast update of arm setpoints
   // Home
-  private static final double InnerArmHome = .422;
-  private static final double OuterArmHome = .466;
-  // travel
-  private static final double InnerArmTravel = .436;
-  private static final double OuterArmTravel = .536;
-  // Middle Node
-  private static final double InnerArmMid = .422;
-  private static final double OuterArmMid = .669;
-  // Human Player
-  private static final double InnerArmHuman = .422; //.577 acutal location  test in progress
-  private static final double OuterArmHuman = .669;  //.666 actual location
-  // top Node
-  private static final double InnerArmTop = .506;
-  private static final double OuterArmTop = .821;
-
-  private static final int autoWhiskerDisable = 1;
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
-
-  public static class Clawconstants {
-    public static final int ModuleID = 31;
-    public static final int OpenClaw = 0;
-    public static final int CloseClaw = 1;
-    public static final int lazersensorID = 2;
-    public static final int overideClawOpen = 1;
-    public static final int overideClawClose = 1;
-
-  }
 //DIO
-  public static final int WhiskerSwitchID = 0;
-
-  public static class LEDconstants {
-    public static final int ModuleID = 31;
-    public static final int LedWhite = 7;
-    public static final int LedRed = 4;
-    public static final int LedGreen = 5;
-    public static final int LedBlue = 6;
-
-  }
 
   public static class CameraConstants {
     // keeps distance from the camera to the robot in meter.
@@ -184,9 +148,9 @@ public final class Constants {
     /* Encoder pos 71.367 degrees */
 
     public static final class FrontLeftSwerveMod {
-      public static final int driveMotorID = 1;
-      public static final int angleMotorID = 2;
-      public static final int canCoderID = 3;
+      public static final int driveMotorID = 22;
+      public static final int angleMotorID = 21;
+      public static final int canCoderID = 23;
       public static final Rotation2d angleOffset = Rotation2d.fromDegrees(251.104);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
@@ -195,9 +159,9 @@ public final class Constants {
     /* Front Right Module - Module 1 */
     /* Encoder pos 105.469 degrees */
     public static final class FrontRightSwerveMod {
-      public static final int driveMotorID = 4;
-      public static final int angleMotorID = 5;
-      public static final int canCoderID = 6;
+      public static final int driveMotorID = 12;
+      public static final int angleMotorID = 11;
+      public static final int canCoderID = 13;
       public static final Rotation2d angleOffset = Rotation2d.fromDegrees(292.148);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
@@ -206,9 +170,9 @@ public final class Constants {
     /* Back Left Module - Module 2 */
     /* Encoder 288.105 degrees */
     public static final class RearLeftSwerveMod {
-      public static final int driveMotorID = 7;
-      public static final int angleMotorID = 8;
-      public static final int canCoderID = 9;
+      public static final int driveMotorID = 32;
+      public static final int angleMotorID = 31;
+      public static final int canCoderID = 33;
       public static final Rotation2d angleOffset = Rotation2d.fromDegrees(339.082);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
@@ -217,9 +181,9 @@ public final class Constants {
     /* Back Right Module - Module 3 */
     /* Endoder 338.730 degrees */
     public static final class RearRightSwerveMod {
-      public static final int driveMotorID = 10;
-      public static final int angleMotorID = 11;
-      public static final int canCoderID = 12;
+      public static final int driveMotorID = 42;
+      public static final int angleMotorID = 41;
+      public static final int canCoderID = 43;
       public static final Rotation2d angleOffset = Rotation2d.fromDegrees(243.281);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
@@ -241,12 +205,6 @@ public final class Constants {
     public static final double outerFF = 0.0;
     public static final double outerMin = -1.0;
     public static final double outerMax = 1.0;
-    public static final double upPIDReferenceE = OuterArmHome; // 0.80;
-    public static final double upPIDReferenceM = OuterArmMid;// 1.26;
-    public static final double upPIDReferenceS = OuterArmTop;// 1.51
-    public static final double downPIDReference = OuterArmTravel;// 0.93;
-    public static final double upPIDReferenceT = OuterArmTravel;// 1.2;
-    public static final double upPIDReferenceH = OuterArmHuman;
     public static final double startingConfig = 2.5;
     public static final double outerPIDTolorence = 0.001;
     public static final boolean kAnalogSensorInverted = false;
@@ -289,12 +247,6 @@ public final class Constants {
     public static final double innerFF = 0.0;
     public static final double innerMin = -1.0;
     public static final double innerMax = 1.0;
-    public static final double PIDReferenceE = InnerArmHome; // 1.26; //A
-    public static final double PIDReferenceM = InnerArmMid;// 1.28; //B Human Player
-    public static final double PIDReferenceS = InnerArmTop;// 1.43; //Y Top Teir
-    public static final double PIDReferenceL = InnerArmTravel;// 0.57; //X Lower Teir Not used I think
-    public static final double PIDReferenceT = InnerArmTravel;// 2.27; //X Travel
-    public static final double PIDReferenceH = InnerArmHuman;
     public static final double innerPIDTolorence = 0.002;
     public static final boolean kAnalogSensorInverted = true;
     // inner arm

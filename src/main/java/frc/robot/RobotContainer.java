@@ -21,26 +21,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.*;
-import frc.robot.commands.Setpoints.InnerArmRaiseH;
-import frc.robot.commands.Setpoints.OuterArmRaiseH;
-import frc.robot.commands.arm.TeleopInnerArm;
 //import frc.robot.commands.arm.TeleopInnerArm2;
 //import frc.robot.commands.arm.TeleopInnerarm2;
-import frc.robot.commands.arm.TeleopOuterArm;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.Arms.ArmOverride;
-import frc.robot.subsystems.Arms.InnerArm;
-import frc.robot.subsystems.Arms.OuterArm;
-import frc.robot.subsystems.Claw;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.autos.BaseAuto;
-import frc.robot.autos.MiddleAuto;
-import frc.robot.autos.SideAuto;
-import frc.robot.commands.arm.TeleopArm;
 import javax.lang.model.util.ElementScanner14;
 import javax.swing.GroupLayout.SequentialGroup;
-import frc.robot.autos.GoDistance;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -57,8 +44,6 @@ public class RobotContainer {
     // creates sendable chooser object!
     // private SendableChooser<Command> autochooser = new SendableChooser<>();
 
-    private final InnerArm m_InnerArm = new InnerArm();
-    private final OuterArm m_OuterArm = new OuterArm();
     public static final SwerveDrive Drive = new SwerveDrive();
 
     // The robot's subsystems and commands are defined here...
@@ -95,8 +80,6 @@ public class RobotContainer {
             primaryDriver,
             XboxController.Button.kBack.value); // BACK/SELECT - Zero Gyro reading
     // Bumpers and Triggers
-    private final Claw m_Claw = new Claw();
-    private final LEDs m_LEDs = new LEDs();
     private final JoystickButton openClaw = new JoystickButton(
             primaryDriver,
             XboxController.Button.kRightBumper.value); // Left Bumper - auto-load
@@ -145,28 +128,16 @@ public class RobotContainer {
             overRideRight,
             Constants.OuterArmConstants.LJSBottomButton); // Right top Rear button
     // CLAW - Joystics
-    private final JoystickButton expandClaw = new JoystickButton(
-            overRideLeft,
-            Constants.Clawconstants.overideClawOpen); // CLAW - Left Joystick
-    private final JoystickButton condenseClaw = new JoystickButton(
-            overRideRight,
-            Constants.Clawconstants.overideClawClose); // CLAW - Right Joystick
 
     /* End of Joystick and Controller assignments */
 
     // triggers
-    Trigger innerStowedCheck = new Trigger(() -> m_InnerArm.isAtStowed());
-    Trigger outerStowedCheck = new Trigger(() -> m_OuterArm.isAtStowed());
-    Trigger closeCheck = new Trigger(() -> m_Claw.isClosed());
     // Trigger whiskerTriggerCheck = new Trigger(() ->
     // m_Claw.whiskerSwitchClosed()); // could be used later
 
     /* Subsystems */
     private final SwerveDrive s_Swerve = new SwerveDrive();
     private int automode = 3;
-    private final ArmOverride s_ArmOverride = new ArmOverride();
-    private final changeautomode m_SideAuto = new changeautomode(s_Swerve, 0);
-    private final changeautomode m_MiddleAuto = new changeautomode(s_Swerve, 1);
 
     // 0 is side auto, 1 is mid auto, you can replace as need be but it's a bodgey
     // fix.
@@ -191,21 +162,12 @@ public class RobotContainer {
                         () -> zeroGyro.getAsBoolean()));
 
         // JOYSTICKS
-
-        m_InnerArm.setDefaultCommand(
-                new TeleopInnerArm(
-                        m_InnerArm,
-                        () -> overRideLeft.getRawAxis(innerArmAxis)));
         /*
          * m_InnerArm.setDefaultCommand(
          * new TeleopInnerArm2(m_InnerArm,
          * () -> overRideRight.getRawAxis(innerArmAxis))
          * );
          */
-        m_OuterArm.setDefaultCommand(
-                new TeleopOuterArm(
-                        m_OuterArm,
-                        () -> overRideRight.getRawAxis(outerArmAxis)));
 
         // Configure the button bindings
 
@@ -219,21 +181,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // ZERO GYRO
         zeroGyro.onTrue(new SequentialCommandGroup(
-                new InstantCommand(() -> s_Swerve.zeroGyro()),
-                new WhiteLedON(m_LEDs).withTimeout(.25),
-                new WaitCommand(.1),
-                new WhiteLedOFF(m_LEDs),
-                new BlueLedON(m_LEDs).withTimeout(.25),
-                new WaitCommand(.1),
-                new BlueLedOFF(m_LEDs),
-                new GreenLedON(m_LEDs).withTimeout(.25),
-                new WaitCommand(.1),
-                new GreenLedOFF(m_LEDs),
-                new RedLedON(m_LEDs).withTimeout(.25),
-                new WaitCommand(.1),
-                new RedLedOFF(m_LEDs),
-                new WaitCommand(.25),
-                new WhiteLedON(m_LEDs)));
+                new InstantCommand(() -> s_Swerve.zeroGyro())));
 
         // new GreenLedON(m_LEDs).withTimeout(.5),
         ////// new GreenLedOFF(m_LEDs),
@@ -244,25 +192,10 @@ public class RobotContainer {
         turtleMode.onTrue(
                 new InstantCommand(() -> s_Swerve.turtleMode()));
         // HOME
-        home.onTrue(
-                new SequentialCommandGroup(
-                        new InnerArmTravel(m_InnerArm),
-                        new OuterArmTravel(m_OuterArm)));
         // TRAVERSAL
-        eTeir.onTrue(
-                new SequentialCommandGroup(
-                        new OuterArmRaiseE(m_OuterArm),
-                        new InnerArmRaiseE(m_InnerArm)));
+
         // HUMAN PLAYER / MID NODE
-        midTier.onTrue(
-                new SequentialCommandGroup(
-                        new InnerArmRaiseM(m_InnerArm).withTimeout(2),
-                        new OuterArmRaiseM(m_OuterArm)));
         // TOP NODE
-        sTeir.onTrue(
-                new ParallelCommandGroup(
-                        new OuterArmRaiseS(m_OuterArm),
-                        new InnerArmRaiseS(m_InnerArm)));
         // CLAW
         /*
          * openClaw.onTrue(
@@ -300,62 +233,13 @@ public class RobotContainer {
 
         /* CoDriver */
         /* Button Bindings - Actions taken upon button press or hold */
-        // HOME
-        CoDriverHome.onTrue(
-                new SequentialCommandGroup(
-                        new InnerArmTravel(m_InnerArm),
-                        new OuterArmTravel(m_OuterArm)).withTimeout(1));
-        // TRAVERSAL
-        CoDriverETeir.onTrue(
-                new SequentialCommandGroup(
-                        new OuterArmRaiseE(m_OuterArm),
-                        new InnerArmRaiseE(m_InnerArm)).withTimeout(1));
-        // TOP NODE
-        CoDrivereSTeir.onTrue(
-                new ParallelCommandGroup(
-                        new OuterArmRaiseS(m_OuterArm),
-                        new InnerArmRaiseS(m_InnerArm)).withTimeout(2));
-        // HUMAN PLAYER | MID NODE
-        CoDrivereMidTeir.onTrue(
-                new ParallelCommandGroup(
-                        new InnerArmRaiseM(m_InnerArm),
-                        new OuterArmRaiseM(m_OuterArm)));
-        CoDriverH.onTrue(
-                new ParallelCommandGroup(
-                        new InnerArmRaiseH(m_InnerArm),
-                        new OuterArmRaiseH(m_OuterArm)).withTimeout(1));
-
+        // HE
         // CLAW
 
-        expandClaw.onTrue(
-                new SequentialCommandGroup(
-                        new OpenClaw(m_Claw),
-                        new GreenLedOFF(m_LEDs),
-
-                        new WhiteLedON(m_LEDs)));
-
-        condenseClaw.onTrue(
-                new SequentialCommandGroup(
-                        new CloseClaw(m_Claw),
-                        new WhiteLedOFF(m_LEDs),
-                        new RedLedOFF(m_LEDs),
-                        new BlueLedOFF(m_LEDs),
-                        new GreenLedON(m_LEDs)
-
-                ));
 
         // Trigger lasersense = new Trigger(m_Claw::getLazerSenser);
         // lasersense.onFalse(new CloseClaw(m_Claw));
 
-        Trigger Whiskersense = new Trigger(m_Claw::whiskerSwitchClosed);
-        Whiskersense.onFalse(
-
-                new SequentialCommandGroup(
-                        new CloseClaw(m_Claw),
-                        new WhiteLedOFF(m_LEDs),
-                        new BlueLedOFF(m_LEDs),
-                        new RedLedOFF(m_LEDs),
-                        new GreenLedON(m_LEDs)));
 
     }
 
@@ -381,11 +265,9 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // 0 is side auto, 1 is mid auto
-        // if(s_Swerve.automode == 0){
-        /*
-         * return new SequentialCommandGroup(
-         * new InstantCommand(() -> s_Swerve.zeroGyro()),
-         * //TIMEOUT IS NOT WORKING, BODGEEEE
+        return new SequentialCommandGroup(
+         new InstantCommand(() -> s_Swerve.zeroGyro()));
+         /* //TIMEOUT IS NOT WORKING, BODGEEEE
          * new TeleopSwerve(s_Swerve, () -> -3, () -> 0.0, () -> 0.0 , () ->
          * false).withTimeout(.25),
          * //, new WaitCommand(.25)).withTimeout(.25),
@@ -481,136 +363,8 @@ public class RobotContainer {
          * // else {
          * // return new WaitCommand(1);
          */
-
-        if (automode == 0) {
-             return new SequentialCommandGroup(
-                    new InstantCommand(() -> s_Swerve.zeroGyro()),
-                    new InstantCommand(() -> s_Swerve.turtleMode()),
-                    new TeleopSwerve(s_Swerve, () -> -3, () -> 0.0, () -> 0.0, () -> false).withTimeout(.5),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new ParallelCommandGroup(
-                            new InnerArmRaiseM(m_InnerArm).withTimeout(0.5),
-                            new OuterArmRaiseM(m_OuterArm)),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new TeleopSwerve(s_Swerve, () -> 3, () -> 0.0, () -> 0.0, () -> false).withTimeout(.7),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new ParallelCommandGroup(
-                            new OuterArmRaiseS(m_OuterArm).withTimeout(1),
-                            new InnerArmRaiseS(m_InnerArm).withTimeout(2)),
-                    new OpenClaw(m_Claw),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new TeleopSwerve(s_Swerve, () -> -3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.5),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    // new CloseClaw(m_Claw),
-                    new ParallelCommandGroup(
-                            new InnerArmRaiseM(m_InnerArm).withTimeout(0.5),
-                            new OuterArmRaiseM(m_OuterArm)),
-                    new ParallelCommandGroup(
-                            new InnerArmTravel(m_InnerArm).withTimeout(2),
-
-                            // new CloseClaw(m_Claw).withTimeout(.2),
-                            new OuterArmTravel(m_OuterArm)),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new TeleopSwerve(s_Swerve, () -> -3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.5),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.1),
-                    // new TeleopSwerve(s_Swerve, () -> 3, () -> 0.0, () -> 0.0 , () ->
-                    // false).withTimeout(.1),
-                   new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> .5, () -> false).withTimeout(.3)
-                //     new InstantCommand(() -> s_Swerve.zeroGyro())
-
-            // new WaitCommand(.6),
-            // new WaitCommand(1),
-            // new TeleopSwerve(s_Swerve, () -> -3, () -> 0.0, () -> 0.0 , () ->
-            // false).withTimeout(.5),
-            // new WaitCommand(.1),
-            // new WaitCommand(5),
-            );
-        } else if (automode == 1) {
-             return new SequentialCommandGroup(
-                    new InstantCommand(() -> s_Swerve.zeroGyro180()),
-                    new InstantCommand(() -> s_Swerve.turtleMode()),
-                    new TeleopSwerve(s_Swerve, () -> 3, () -> 0.0, () -> 0.0, () -> false).withTimeout(.5),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new ParallelCommandGroup(
-                            new InnerArmRaiseM(m_InnerArm).withTimeout(0.5),
-                            new OuterArmRaiseM(m_OuterArm)),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new TeleopSwerve(s_Swerve, () -> -3, () -> 0.0, () -> 0.0, () -> false).withTimeout(.7),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new ParallelCommandGroup(
-                            new OuterArmRaiseS(m_OuterArm).withTimeout(1),
-                            new InnerArmRaiseS(m_InnerArm).withTimeout(2)),
-                    new OpenClaw(m_Claw));
-        } else if (automode == 2) {
-             return new SequentialCommandGroup(
-                    new InstantCommand(() -> s_Swerve.zeroGyro180()),
-                    new InstantCommand(() -> s_Swerve.turtleMode()),
-                    new TeleopSwerve(s_Swerve, () -> 3, () -> 0.0, () -> 0.0, () -> false).withTimeout(.5),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new ParallelCommandGroup(
-                            new InnerArmRaiseM(m_InnerArm).withTimeout(0.5),
-                            new OuterArmRaiseM(m_OuterArm)),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new TeleopSwerve(s_Swerve, () -> -3, () -> 0.0, () -> 0.0, () -> false).withTimeout(.7),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new ParallelCommandGroup(
-                            new OuterArmRaiseS(m_OuterArm).withTimeout(1),
-                            new InnerArmRaiseS(m_InnerArm).withTimeout(2)),
-                    new OpenClaw(m_Claw),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new TeleopSwerve(s_Swerve, () -> 3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.2),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    // new CloseClaw(m_Claw),
-                    new ParallelCommandGroup(
-                            new InnerArmRaiseM(m_InnerArm).withTimeout(0.5),
-                            new OuterArmRaiseM(m_OuterArm)),
-                    new ParallelCommandGroup(
-                            new InnerArmTravel(m_InnerArm).withTimeout(2),
-
-                            // new CloseClaw(m_Claw).withTimeout(.2),
-                            new OuterArmTravel(m_OuterArm)));
-        } 
-        else if(automode == 3) {
-                return new SequentialCommandGroup(
-                    new InstantCommand(() -> s_Swerve.zeroGyro180()),
-                    new InstantCommand(() -> s_Swerve.turtleMode()),
-                    new TeleopSwerve(s_Swerve, () -> 3, () -> 0.0, () -> 0.0, () -> false).withTimeout(.5),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new ParallelCommandGroup(
-                            new InnerArmRaiseM(m_InnerArm).withTimeout(0.5),
-                            new OuterArmRaiseM(m_OuterArm)),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new TeleopSwerve(s_Swerve, () -> -3, () -> 0.0, () -> 0.0, () -> false).withTimeout(.7),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new ParallelCommandGroup(
-                            new OuterArmRaiseS(m_OuterArm).withTimeout(1),
-                            new InnerArmRaiseS(m_InnerArm).withTimeout(2)),
-                    new OpenClaw(m_Claw),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new TeleopSwerve(s_Swerve, () -> 3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.3),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    // new CloseClaw(m_Claw),
-                    new ParallelCommandGroup(
-                            new InnerArmRaiseM(m_InnerArm).withTimeout(0.5),
-                            new OuterArmRaiseM(m_OuterArm)),
-                    new ParallelCommandGroup(
-                            new InnerArmTravel(m_InnerArm).withTimeout(2),
-
-                            // new CloseClaw(m_Claw).withTimeout(.2),
-                            new OuterArmTravel(m_OuterArm)),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25),
-                    new TeleopSwerve(s_Swerve, () -> 3, () -> 0.0, () -> 0.0, () -> false).withTimeout(1.5),
-                    new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.1),
-                    // new TeleopSwerve(s_Swerve, () -> 3, () -> 0.0, () -> 0.0 , () ->
-                    // false).withTimeout(.1),
-                   new InstantCommand(() -> s_Swerve.turtleMode()));
-        }
-        else {
-            return new SequentialCommandGroup(
-                new TeleopSwerve(s_Swerve, () -> 0, () -> 0.0, () -> 0.0, () -> false).withTimeout(.25));
-        }
         // because it's allready in a scg we don't need to make a new one
     }
 
-}
+    }
 // return autochooser.getSelected();
